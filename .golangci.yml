@@ -1,171 +1,135 @@
-# Docs: https://golangci-lint.run/usage/linters/
+version: "2"
 run:
   concurrency: 6
-  deadline: 20m
-  skip-dirs:
-    - api/generated
-    - cmd/scratch
-issues:
-  new-from-rev: ""
-  include:
-    # revive `package-comments` and `exported` rules.
-    - EXC0012
-    - EXC0013
-    - EXC0014
 linters:
   enable:
-    - forbidigo
     - asciicheck
     - bodyclose
-#    - depguard
     - dogsled
-    - errcheck
     - errorlint
     - exhaustive
-    - exportloopref
-    - gci
-#    - gochecknoinits
+    - forbidigo
     - gocognit
     - goconst
     - gocritic
     - gocyclo
     - godox
-#    - goerr113
-#    - gofmt
-#    - gofumpt
     - goheader
-#    - goimports
     - gomodguard
     - goprintffuncname
     - gosec
-    - gosimple
-    - govet
-#    - ineffassign
-#    - lll
     - makezero
     - misspell
     - nakedret
     - nestif
     - noctx
-#    - nolintlint
-#    - paralleltest
     - predeclared
     - protogetter
     - revive
     - rowserrcheck
     - sqlclosecheck
     - staticcheck
-    - stylecheck
     - thelper
     - tparallel
-    - typecheck
     - unconvert
-#    - unparam
-    - unused
     - whitespace
     - wrapcheck
-linters-settings:
-  forbidigo:
-    forbid:
-      - ^print.*$
-      - ^spew\.(ConfigState\.)?Dump$
-      - p: ^spew.Dump$
-        pkg: ^github.com/davecgh/go-spew/spew$
-
-  protogetter:
-    skip-any-generated: true
-
-#  disabled temporarily
-#  lll:
-#    line-length: 120
-
-  wrapcheck:
-    ignorePackageGlobs:
-      - google.golang.org/grpc/*
-  gci:
-    skip-generated: true
-    sections:
-      - Standard
-      - Default
-      - Prefix(web_clean_arch)
-
-  errcheck:
-    check-type-assertions: true
-    check-blank: true
-#  govet:
-#    enable:
-#      - fieldalignment
-  godox:
-    keywords:
-      - BUG
-      - FIXME
-      - HACK
-  gocritic:
-    enabled-checks:
-      # Diagnostic
-      - appendAssign
-      - argOrder
-      - badCond
-      - caseOrder
-      - codegenComment
-      - commentedOutCode
-      - deprecatedComment
-      - dupArg
-      - dupBranchBody
-      - dupCase
-      - dupSubExpr
-      - exitAfterDefer
-      - flagDeref
-      - flagName
-      - nilValReturn
-      - offBy1
-      - sloppyReassign
-      - weakCond
-      - octalLiteral
-
-      # Performance
-      - appendCombine
-      - equalFold
-      - hugeParam
-      - indexAlloc
-      - rangeExprCopy
-      - rangeValCopy
-#
-#      # Style
-#      - assignOp
-#      - boolExprSimplify
-      - captLocal
-      - commentFormatting
-      - commentedOutImport
-      - defaultCaseOrder
-      - docStub
-      - elseif
-      - emptyFallthrough
-      - emptyStringTest
-      - hexLiteral
-      - ifElseChain
-      - methodExprCall
-      - regexpMust
-      - singleCaseSwitch
-      - sloppyLen
-      - stringXbytes
-      - switchTrue
-      - typeAssertChain
-      - typeSwitchVar
-      - underef
-      - unlabelStmt
-      - unlambda
-      - unslice
-      - valSwap
-      - wrapperFunc
-      - yodaStyleExpr
-
-#      # Opinionated
-#      - builtinShadow
-#      - importShadow
-#      - initClause
-#      - nestingReduce
-#      - paramTypeCombine
-#      - ptrToRefParam
-#      - typeUnparen
-#      - unnecessaryBlock
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+    forbidigo:
+      forbid:
+        - pattern: ^print.*$
+        - pattern: ^spew\.(ConfigState\.)?Dump$
+        - pattern: ^spew.Dump$
+          pkg: ^github.com/davecgh/go-spew/spew$
+    gocritic:
+      enabled-checks:
+        - appendAssign
+        - argOrder
+        - badCond
+        - caseOrder
+        - codegenComment
+        - commentedOutCode
+        - deprecatedComment
+        - dupArg
+        - dupBranchBody
+        - dupCase
+        - dupSubExpr
+        - exitAfterDefer
+        - flagDeref
+        - flagName
+        - nilValReturn
+        - offBy1
+        - sloppyReassign
+        - weakCond
+        - octalLiteral
+        - appendCombine
+        - equalFold
+        - hugeParam
+        - indexAlloc
+        - rangeExprCopy
+        - rangeValCopy
+        - captLocal
+        - commentFormatting
+        - commentedOutImport
+        - defaultCaseOrder
+        - docStub
+        - elseif
+        - emptyFallthrough
+        - emptyStringTest
+        - hexLiteral
+        - ifElseChain
+        - methodExprCall
+        - regexpMust
+        - singleCaseSwitch
+        - sloppyLen
+        - stringXbytes
+        - switchTrue
+        - typeAssertChain
+        - typeSwitchVar
+        - underef
+        - unlabelStmt
+        - unlambda
+        - unslice
+        - valSwap
+        - wrapperFunc
+        - yodaStyleExpr
+    godox:
+      keywords:
+        - BUG
+        - FIXME
+        - HACK
+    protogetter:
+      skip-any-generated: true
+    wrapcheck:
+      ignore-package-globs:
+        - google.golang.org/grpc/*
+  exclusions:
+    generated: lax
+    presets:
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+issues:
+  new-from-rev: ""
+formatters:
+  enable:
+    - gci
+  settings:
+    gci:
+      sections:
+        - Standard
+        - Default
+        - Prefix(web_clean_arch)
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
