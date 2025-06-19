@@ -23,3 +23,12 @@ tasks:
     cmds:
       - yarn {{.CLI_ARGS}}
 ```
+
+# Goreleaser
+https://goreleaser.com/install/
+
+
+goreleaser init
+
+
+goreleaser check

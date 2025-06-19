@@ -1,0 +1,56 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+dist: bin
+builds:
+  - env:
+      - CGO_ENABLED=0
+    dir: cmd/api
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    flags:
+      - -trimpath
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    binary: "web_clean_arch"
+    ldflags:
+      - -X web_clean_arch.ReleaseVersion=v{{.Version}}
+      - -X web_clean_arch.ReleaseEnvironment=prd
+      - -X web_clean_arch.BuildDate={{.Date}}
+archives:
+  - name_template: >-
+      web_clean_arch_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+    formats: ["tar.gz"]
+    format_overrides:
+      - goos: windows
+        formats: ["zip"]
+snapshot:
+  version_template: "{{ .Tag }}-next"
+checksum:
+  name_template: 'web_clean_arch__SHA256SUMS'
+  algorithm: sha256
+signs:
+  - cmd: cosign
+    # args: ["sign-blob", "--key=hashivault://cosign", "--output-signature=${signature}", "${artifact}"]
+    args: ["sign-blob", "--output-signature=${signature}", "${artifact}"]
+    artifacts: all
+release:
+  draft: false
+changelog:
+  disable: true
+# artifactories:
+#   - name: prd
+#     mode: archive
+#     target: https://invitae.jfrog.io/artifactory/generic/invitae-cloud/nvtactl/v{{ .Version }}/
+#     signature: true
+#     checksum: true
