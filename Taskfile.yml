@@ -16,3 +16,11 @@ tasks:
     cmds:
       -  $(go env GOPATH)/bin/golangci-lint run
     silent: true
+  api:
+    cmds:
+      -  go run cmd/api/main.go
+    silent: true
+  cli:
+    cmds:
+      - go run cmd/cli/main.go  
+    silent: true

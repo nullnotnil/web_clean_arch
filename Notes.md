@@ -28,7 +28,20 @@ tasks:
 https://goreleaser.com/install/
 
 
-goreleaser init
+`goreleaser init`
 
 
-goreleaser check
+`goreleaser check`
+
+# MKDOCS 
+`sudo apt install mkdocs`
+
+
+`pip install mkdocs-techdocs-core`
+
+
+`mkdocs new .`
+
+
+`mkdocs serve`
+

@@ -1,0 +1,14 @@
+site_name: "Demo website for Clean Architecture Documentation"
+repo_url: "https://github.com/nullnotnil/web_clean_arch"
+# If you add one, remove Site URL when testing locally, otherwise it will fail to serve the site
+edit_uri: "tree/main/docs"
+site_description: "Documentation for Cloud API"
+site_author: invitae-cloud-edge
+
+# Uncomment when testing locally, you need a nav object for mkdocs to work.
+# Once you've started the server, this can be safely commented out again and the entire nav bar will be rendered.
+# nav:
+#   - Home: 'index.md'
+
+plugins:
+  - techdocs-core
