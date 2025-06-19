@@ -1,0 +1,18 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GOLINTER: $(go env GOPATH)/bin/golangci-lint
+
+dotenv: ['.env']
+
+tasks:
+  default:
+    cmds:
+      -  echo "{{.CLI_ARGS}}"
+    silent: true
+  lint:
+    cmds:
+      -  $(go env GOPATH)/bin/golangci-lint run
+    silent: true
