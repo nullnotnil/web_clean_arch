@@ -1,11 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"os"
+	"web_clean_arch/internal/services"
 )
 
 func main() {
-	p, _ := os.Getwd()
-	fmt.Printf("%s/api", p)
+	asm := services.NewAppServiceManager(
+		services.WithConfig(),
+		services.WithLogger(),
+	)
+	asm.Logger.Infoln(
+		asm.Config.Get("DB_NAME"),
+	)
+	asm.Logger.Warning(os.Getenv("DB_NAME"))
 }
