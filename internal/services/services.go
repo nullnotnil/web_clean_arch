@@ -11,23 +11,23 @@ import (
 type IAppServiceManager interface {
 	Start() error
 	Stop() error
-	GetService(srv_name string) *AppService
+	GetService(srv_name string) IAppService
 	GetEnvString(key string) string
 	GetEnvInt(key string, default_value int) int
 	GetEnvBool(key string, default_value bool) int
 	GetEnvFloat(key string, default_value float32) float32
 }
 type AppServiceManager struct {
-	err_chan          chan error
-	service_container map[string]*AppService
+	Err_chan          chan error
+	Service_container map[string]IAppService
 	Logger            *logrus.Logger
 	Config            *viper.Viper
 }
 
 func NewAppServiceManager(opts ...AppServiceManagerOption) *AppServiceManager {
 	asm := &AppServiceManager{
-		err_chan:          make(chan error),
-		service_container: make(map[string]*AppService),
+		Err_chan:          make(chan error),
+		Service_container: make(map[string]IAppService),
 	}
 	for _, opt := range opts {
 		opt(asm)
@@ -36,13 +36,42 @@ func NewAppServiceManager(opts ...AppServiceManagerOption) *AppServiceManager {
 }
 
 func (asm *AppServiceManager) Start() error {
+	if asm.Logger == nil {
+		panic("Logger is not initialized")
+	}
+	if asm.Config == nil {
+		panic("Config is not loaded")
+	}
+
+	asm.Logger.Warningln("App services are starting up...")
+	var wg sync.WaitGroup
+	for _, svr := range asm.Service_container {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			svr.Start(asm)
+		}()
+	}
+	go func() {
+		wg.Wait()
+		close(asm.Err_chan)
+	}()
+
+	for err := range asm.Err_chan {
+		asm.Logger.Errorln(err)
+	}
+
 	return nil
 }
 func (asm *AppServiceManager) Stop() error {
 	return nil
 }
-func (asm *AppServiceManager) GetService(svr_name string) *AppService {
-	return nil
+func (asm *AppServiceManager) GetService(svr_name string) IAppService {
+	s, ok := asm.Service_container[svr_name]
+	if !ok {
+		return nil
+	}
+	return s
 }
 func (asm *AppServiceManager) GetEnvString(key string, default_value string) string {
 	return ""
@@ -82,7 +111,7 @@ func WithConfig() AppServiceManagerOption {
 
 func WithNewService(name, desc string, singleton bool) AppServiceManagerOption {
 	return func(asm *AppServiceManager) {
-		asm.service_container[name] = NewAppService(name, desc, singleton)
+		asm.Service_container[name] = NewAppService(name, desc, singleton)
 	}
 }
 
@@ -116,5 +145,9 @@ func (as *AppService) Stop(asm *AppServiceManager) error {
 	return nil
 }
 func (as *AppService) GetInstance(asm *AppServiceManager) (*AppService, error) {
-	return nil, nil
+	if as.instance != nil && as.is_singleton {
+		return as.instance, nil
+	}
+	as.instance = as
+	return as, nil
 }
