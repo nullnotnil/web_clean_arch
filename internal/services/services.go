@@ -148,6 +148,9 @@ func (as *AppService) GetInstance(asm *AppServiceManager) (*AppService, error) {
 	if as.instance != nil && as.is_singleton {
 		return as.instance, nil
 	}
-	as.instance = as
-	return as, nil
+	srv, ok := asm.Service_container[as.Name]
+	if ok {
+		as.instance = srv.(*AppService)
+	}
+	return as.instance, nil
 }

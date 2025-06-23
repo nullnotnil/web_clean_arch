@@ -2,16 +2,33 @@ package main
 
 import (
 	"web_clean_arch/internal/services"
-	"web_clean_arch/internal/services/example"
+	"web_clean_arch/internal/services/pgdb"
 )
+
+type User struct {
+	ID       uint   `gorm:"primarykey"`
+	Fullname string `gorm:"column:fullname;"`
+	Email    string `gorm:"column:email;"`
+}
+
+func (u *User) TableName() string { return "user" }
 
 func main() {
 	asm := services.NewAppServiceManager(
 		services.WithConfig(),
 		services.WithLogger(),
-		example.WithExampleService("exampleeeee"),
+		// example.WithExampleService("exampleeeee"),
+		pgdb.WithPGDBService("pgdb"),
 	)
 	asm.Start()
+
+	pg := asm.GetService("pgdb")
+	srv := pg.(*pgdb.PGDBService)
+
+	var user User
+	srv.DB.First(&user)
+	asm.Logger.Println(user)
+
 	/* asm.Logger.Infoln(
 		asm.Config.Get("DB_NAME"),
 	)
