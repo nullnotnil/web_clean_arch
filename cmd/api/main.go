@@ -1,8 +1,12 @@
 package main
 
 import (
+	"net/http"
+	"web_clean_arch/internal/modules/user/controller"
 	"web_clean_arch/internal/services"
 	"web_clean_arch/internal/services/pgdb"
+
+	"github.com/gin-gonic/gin"
 )
 
 type User struct {
@@ -22,22 +26,17 @@ func main() {
 	)
 	asm.Start()
 
-	pg := asm.GetService("pgdb")
-	srv := pg.(*pgdb.PGDBService)
+	// spin up the server
+	router := gin.Default()
 
-	var user User
-	srv.DB.First(&user)
-	asm.Logger.Println(user)
+	v1_group := router.Group("v1")
+	v1_group.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "pong",
+		})
+	})
+	v1_group.POST("users", controller.NewUserController().CreateUserFunc(asm))
 
-	/* asm.Logger.Infoln(
-		asm.Config.Get("DB_NAME"),
-	)
-	asm.Logger.Warning(os.Getenv("DB_NAME"))
+	router.Run(":3000")
 
-	ex := asm.GetService("exampleeeee")
-	if ex != nil {
-		// interface to struct
-		svr := ex.(*example.ExampleService)
-		asm.Logger.Infoln(svr.Description)
-	} */
 }
